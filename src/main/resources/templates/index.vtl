@@ -1,16 +1,24 @@
-<div class="row">
-<div class="card-columns">
-#foreach ($movie in $movies)
-<div class="card card-image" style="background-image: url(https://image.tmdb.org/t/p/w500$movie.getPosterPath())">
-    <div class="text-white text-center d-flex align-items-center rgba-black-strong py-5 px-4">
-        <div>
-        <h5 class="pink-text"><i class="fa fa-calendar"></i> $movie.getReleaseDate()</h5>
-        <h3 class="card-title pt-2"><i class="fa fa-film"></i><strong>$movie.getTitle()</strong></h3>
-        <p>$movie.getOverview()</p>
-        <a class="btn btn-pink" href="/details/$movie.getId()"><i class="fa fa-clone left"></i> View/Rate</a>
-        </div>
-    </div>
-</div>
-#end
-</div>
-</div>
+trttr
+<table id="rankings" class="table table-hover">
+
+<!--Table head-->
+  <thead>
+    <tr>
+        <th>#</th>
+        <th>Name</th>
+        <th>Total Points</th>
+        <th>Username</th>
+        <th>Attempts</th>
+    </tr>
+  </thead>
+
+<tbody>
+    <tr>
+      <th scope="row">1</th>
+      <td>$user.getName()</td>
+      <td>$user.getHonor()</td>
+      <td>@$user.getUsername()</td>
+      <td>$user.getClan()</td>
+    </tr>
+</tbody>
+</table>

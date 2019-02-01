@@ -17,6 +17,7 @@ public class Codewars {
     private CodeChallenges codeChallenges;
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+
     public String getUsername() {
         return username;
     }
