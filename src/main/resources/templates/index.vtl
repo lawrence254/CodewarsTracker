@@ -1,4 +1,3 @@
-trttr
 <table id="rankings" class="table table-hover">
 
 <!--Table head-->
@@ -13,12 +12,14 @@ trttr
   </thead>
 
 <tbody>
+#foreach ($user in $users)
     <tr>
-      <th scope="row">1</th>
+      <td scope="row">$foreach.count</td>
       <td>$user.getName()</td>
       <td>$user.getHonor()</td>
       <td>@$user.getUsername()</td>
       <td>$user.getClan()</td>
     </tr>
+#end
 </tbody>
 </table>

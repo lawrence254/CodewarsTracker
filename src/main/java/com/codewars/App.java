@@ -36,7 +36,7 @@ public class App{
         // Result result = null;
         try {
             String jsonData = response.body().string();
-             logger.info("Details response: " + jsonData);
+            logger.info("Details response: " + jsonData);
 
             if (response.isSuccessful()) {
                 JSONObject responseJson = new JSONObject(jsonData);
@@ -50,80 +50,81 @@ public class App{
         return codewars;
     }
 
-   public static void main(String[] args){
-    ProcessBuilder process = new ProcessBuilder();
-    Integer port;
-    if (process.environment().get("PORT") != null) {
-        port = Integer.parseInt(process.environment().get("PORT"));
-    } else {
-        port = 4567;
-    }
-    port(port);
+    public static void main(String[] args){
+        ProcessBuilder process = new ProcessBuilder();
+        Integer port;
+        if (process.environment().get("PORT") != null) {
+            port = Integer.parseInt(process.environment().get("PORT"));
+        } else {
+            port = 4567;
+        }
+        port(port);
 
 
 
-    //Creating a New OkHttp Request
-       OkHttpClient client = new OkHttpClient();
+        //Creating a New OkHttp Request
+        OkHttpClient client = new OkHttpClient();
 
-       //Debugging Screen
-       enableDebugScreen();
+        //Debugging Screen
+        enableDebugScreen();
 
-       staticFileLocation("/public");
+        staticFileLocation("/public");
 
-       //layout template
-       String layout = "templates/layout.vtl";
+        //layout template
+        String layout = "templates/layout.vtl";
 
-       ArrayList usernames = new ArrayList();
-       //INDEX PAGE // Top rated
-     get("/", (req, res) -> {
-         String user;
-         String acc = null;
-         String url;
-         Request request = null;
-                 Map<String, Object> model = new HashMap<>();
-                 HttpUrl.Builder codeBuilder = HttpUrl.parse(Constants.BASE_URL).newBuilder();
+        ArrayList usernames = new ArrayList();
+        //INDEX PAGE // Top rated
+        get("/", (req, res) -> {
+            String user;
+            String acc;
+            String url;
+            Request request = null;
+            List<Codewars> usersList = new ArrayList<>();
+            Map<String, Object> model = new HashMap<>();
+            HttpUrl.Builder codeBuilder = HttpUrl.parse(Constants.BASE_URL).newBuilder();
 
-                 try {
+            try {
 
-                     FileReader fileReader = new FileReader("/home/master/Documents/TMProjects/CodeClass/src/main/java/com/codewars/names.json");
-                     JSONTokener jTokener = new JSONTokener(fileReader);
-                     JSONArray users = new JSONArray(jTokener);
-                     for (int i = 0; i < users.length(); i++) {
-                         JSONObject userObj = users.getJSONObject(i);
-                         user = userObj.getString("username");
-                         usernames.add(user);
+                FileReader fileReader = new FileReader("/home/master/Documents/TMProjects/CodeClass/src/main/java/com/codewars/names.json");
+                JSONTokener jTokener = new JSONTokener(fileReader);
+                JSONArray users = new JSONArray(jTokener);
+                for (int i = 0; i < users.length(); i++) {
+                    JSONObject userObj = users.getJSONObject(i);
+                    user = userObj.getString("username");
+                    usernames.add(user);
 //                 System.out.println(user);
-                     }
-                 } catch (Exception e) {
-                     logger.error(String.valueOf(e));
-                 }
+                }
+            } catch (Exception e) {
+                logger.error(String.valueOf(e));
+            }
 
 //                 Iterator it = usernames.iterator();
-         for (Object userO : usernames) {
-             acc = (String) userO;
-//             System.out.println(acc);
-         }
+            for (int j=0;j<usernames.size();j++){
+                Object userO = usernames.get(j);
+                acc =(String)userO;
+//                codeBuilder.setPathSegment(0, acc);
+                url = String.format(Constants.BASE_URL, acc);
+                logger.info("Base url is: " + url);
 
-         codeBuilder.addPathSegment(acc);
-         url = codeBuilder.build().toString();
-         logger.info("Base url is: " + url);
+                request = new Request.Builder()
+                        .url(url)
+                        .build();
 
-         request = new Request.Builder()
-                 .url(url)
-                 .build();
+                try (Response response = client.newCall(request).execute()) {
+                    Codewars result = processCodewars(response);
+                    if (result != null) {
+                        usersList.add(result);
 
-         try (Response response = client.newCall(request).execute()) {
-             Codewars result = processCodewars(response);
-             if (result != null) {
-                 model.put("user", result);
-
-             }
-         } catch (IOException e) {
-             e.getStackTrace();
-         }
-
+                    }
+                } catch (IOException e) {
+                    e.getStackTrace();
+                }
+            }
+//
+            model.put("users", usersList);
             model.put("template", "templates/index.vtl");
             return new VelocityTemplateEngine().render(new ModelAndView(model, layout));
         });
-   }
     }
+}
